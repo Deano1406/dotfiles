@@ -1,0 +1,83 @@
+{
+  "name": "API key based authentication",
+  "description": "Create a reverse proxy with Basic API key verification using query parameters",
+  "prefix": "AK-authentication-proxy",
+  "inputs": {
+    "basePath": {
+      "label": "Base path",
+      "default": "verify-api-key",
+      "validation": "basepath"
+    },
+    "targetURL": {
+      "label": "Back end target URL",
+      "default": "https://google.com",
+      "validation": "url"
+    }
+  },
+  "xml": {
+    "proxies": {
+      "default": [
+        "<ProxyEndpoint name=\"default\">",
+        "  <PreFlow name=\"PreFlow\">",
+        "    <Request>",
+        "      <Step>",
+        "        <Name>verify-api-key</Name>",
+        "      </Step>",
+        "      <Step>",
+        "        <Name>remove-query-param-apikey</Name>",
+        "      </Step>",
+        "      <Step>",
+        "        <Name>impose-quota</Name>",
+        "      </Step>",
+        "    </Request>",
+        "  </PreFlow>",
+        "  <HTTPProxyConnection>",
+        "    <BasePath>{{basePath}}</BasePath>",
+        "  </HTTPProxyConnection>",
+        "  <RouteRule name=\"default-route\">",
+        "    <TargetEndpoint>default</TargetEndpoint>",
+        "  </RouteRule>",
+        "</ProxyEndpoint>"
+      ]
+    },
+    "targets": {
+      "default": [
+        "<TargetEndpoint name=\"default\">",
+        "  <HTTPTargetConnection>",
+        "    <URL>{{targetURL}}</URL>",
+        "  </HTTPTargetConnection>",
+        "</TargetEndpoint>"
+      ]
+    },
+    "policies": {
+      "verify-api-key": [
+        "<VerifyAPIKey async=\"false\" continueOnError=\"false\" enabled=\"true\" name=\"verify-api-key\">",
+        "    <DisplayName>Verify API Key</DisplayName>",
+        "    <APIKey ref=\"request.queryparam.apikey\"/>",
+        "</VerifyAPIKey>"
+      ],
+      "remove-query-param-apikey": [
+        "<AssignMessage async=\"false\" continueOnError=\"false\" enabled=\"true\" name=\"remove-query-param-apikey\">",
+        "    <DisplayName>Remove Query Param apikey</DisplayName>",
+        "    <Remove>",
+        "        <QueryParams>",
+        "            <QueryParam name=\"apikey\"/>",
+        "        </QueryParams>",
+        "    </Remove>",
+        "    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>",
+        "    <AssignTo createNew=\"false\" transport=\"http\" type=\"request\"/>",
+        "</AssignMessage>"
+      ],
+      "impose-quota": [
+        "<Quota async=\"false\" continueOnError=\"false\" enabled=\"true\" name=\"impose-quota\">",
+        "    <DisplayName>Impose Quota</DisplayName>",
+        "    <Allow countRef=\"verifyapikey.verify-api-key.apiproduct.developer.quota.limit\" count=\"2000\"/>",
+        "    <Interval ref=\"verifyapikey.verify-api-key.apiproduct.developer.quota.interval\">1</Interval>",
+        "    <Distributed>true</Distributed>",
+        "    <Synchronous>true</Synchronous>",
+        "    <TimeUnit ref=\"verifyapikey.verify-api-key.apiproduct.developer.quota.timeunit\">month</TimeUnit>",
+        "</Quota>"
+      ]
+    }
+  }
+}

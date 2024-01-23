@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "type": "object",
+  "properties": {
+    "proxies": {
+      "type": "array",
+      "description": "List of proxies to be deployed",
+      "items": {
+        "anyOf":[
+          {
+            "type":"object",
+            "$ref": "#/definitions/ProxyDeployment"
+          },
+          {
+            "type":"string"
+          }
+        ]
+      }
+    },
+    "sharedflows": {
+      "type": "array",
+      "description": "List of shared flows to be deployed",
+      "items": {
+        "anyOf":[
+          {
+            "type":"object",
+            "$ref": "#/definitions/SharedFlowDeployment"
+          },
+          {
+            "type":"string"
+          }
+        ]
+      }
+    }
+  },
+  "required": [
+    "proxies",
+    "sharedflows"
+  ],
+  "definitions": {
+    "ProxyDeployment": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "serviceAccount": {
+          "type": "string",
+          "pattern":"^.*@.*.iam.gserviceaccount.com$"
+        }
+      },
+      "defaultSnippets": [
+        {
+          "label": "Add proxy",
+          "body": {
+            "name": "${1:proxyName}"
+          }
+        },
+        {
+          "label": "Add proxy with service account",
+          "body": {
+            "name": "${1:proxyName}",
+            "serviceAccount": "${2:serviceAccount}"
+          }
+        }
+      ]
+    },
+    "SharedFlowDeployment": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "serviceAccount": {
+          "type": "string",
+          "pattern":"^.*@.*.iam.gserviceaccount.com$"
+        }
+      },
+      "defaultSnippets": [
+        {
+          "label": "Add shared flow",
+          "body": {
+            "name": "${1:sharedFlowName}"
+          }
+        },
+        {
+          "label": "Add shared flow with service account",
+          "body": {
+            "name": "${1:sharedFlowName}",
+            "serviceAccount": "${2:serviceAccount}"
+          }
+        }
+      ]
+    }
+  }
+}

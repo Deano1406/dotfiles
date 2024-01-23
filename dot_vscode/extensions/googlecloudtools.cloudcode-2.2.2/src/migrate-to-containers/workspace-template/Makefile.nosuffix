@@ -1,0 +1,77 @@
+CONFIG_FILE=./m2c-config.mk
+include $(CONFIG_FILE)
+
+M2C?=m2c
+
+VM_COPY=vm-copy
+VM_COPY_MARKER=vm-copy.timestamp
+ANALYZE_DIR=migration-plan
+GENERATE_DIR=src
+MIGRATION_PLAN=$(ANALYZE_DIR)/config.yaml
+FILTERS_FILE=filters.txt
+ANALYZE_ARGS_FILE=analyze-args.ini
+M2C_CLI_HOME?=$(HOME)/.m2c
+PLUGIN_DEF=$(M2C_CLI_HOME)/plugins/$(PLUGIN).yaml
+
+export M2C_CLI_RUNNER=vscode
+
+.PHONY: all
+all: generate
+
+.PHONY: copy
+copy: $(VM_COPY)
+
+$(PLUGIN_DEF):
+	$(M2C) plugins update
+
+$(ANALYZE_ARGS_FILE): | $(PLUGIN_DEF)
+	@grep -oP '(?<=name:).*' "$(PLUGIN_DEF)" | sed -re 's:^\s*(.*)$$:\1=:g' > "$@.tmp1"
+	@grep -oP '(?<=usage:).*' "$(PLUGIN_DEF)" | sed -re 's:^\s*(.*)$$:# \1:g' > "$@.tmp2"
+	@sed "R$@.tmp1" "$@.tmp2" > "$@"
+	@$(RM) "$@.tmp1" "$@.tmp2"
+
+$(FILTERS_FILE):
+	@$(M2C) copy default-filters > "$@" || rm -f "$@"
+
+$(VM_COPY_MARKER) $(VM_COPY): $(FILTERS_FILE) $(CONFIG_FILE)
+	@$(M2C) copy ssh \
+		"$(SSH_HOST)" \
+		--ssh-flags "$(SSH_ARGS)" \
+		--filters "$(FILTERS_FILE)" \
+		--output "$(VM_COPY)" \
+		&& date > "$(VM_COPY_MARKER)"
+
+.PHONY: analyze
+analyze: $(MIGRATION_PLAN)
+
+$(MIGRATION_PLAN): $(VM_COPY_MARKER) $(ANALYZE_ARGS_FILE)
+	@$(RM) -r "$(ANALYZE_DIR)"
+	@$(M2C) analyze \
+		--plugin "$(PLUGIN)" \
+		--source "$(VM_COPY)" \
+		--output "$(ANALYZE_DIR)" \
+		$(shell grep -v -e '^\s*#' "$(ANALYZE_ARGS_FILE)" | sed -e "s:^.*$$:--parameter '\0':g") \
+		--verbose && \
+		SCHEMA=$$(grep validationSchema $(PLUGIN_DEF) | sed -r "s/^[^']+'(.+)'$$/\1/"); \
+		SCHEMA=$${SCHEMA:-\{\}}; \
+		echo "$${SCHEMA}" > .migration-plan-schema.json
+
+.PHONY: generate
+generate: $(GENERATE_DIR)
+
+$(GENERATE_DIR): $(MIGRATION_PLAN)
+	@$(RM) -r "$@"
+	@$(M2C) generate \
+	--input "$(ANALYZE_DIR)" \
+	--output "$@"
+
+.PHONY: clean
+clean:
+	$(RM) -r \
+		"$(GENERATE_DIR)" \
+		"$(ANALYZE_DIR)" \
+		"$(VM_COPY_MARKER)" \
+		"$(ANALYZE_ARGS_FILE)" \
+		"$(ANALYZE_ARGS_FILE).tmp1" \
+		"$(ANALYZE_ARGS_FILE).tmp2"
+	if [ -d "$(VM_COPY)" ]; then $(M2C) cleanup --source "$(VM_COPY)"; fi

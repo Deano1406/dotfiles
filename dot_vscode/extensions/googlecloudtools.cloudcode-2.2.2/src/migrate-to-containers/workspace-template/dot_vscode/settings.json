@@ -1,0 +1,5 @@
+{
+  "yaml.schemas": {
+    ".migration-plan-schema.json": "migration-plan/config.yaml"
+  }
+}

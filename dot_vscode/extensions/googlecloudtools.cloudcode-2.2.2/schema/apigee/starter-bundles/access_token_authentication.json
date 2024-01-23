@@ -1,0 +1,83 @@
+{
+  "name": "Access token based authentication",
+  "description": "Create a proxy using Basic access token verification",
+  "prefix": "AT-authentication-proxy",
+  "inputs": {
+    "basePath": {
+      "label": "Base path",
+      "default": "verify-api-key",
+      "validation": "basepath"
+    },
+    "targetURL": {
+      "label": "Back end target URL",
+      "default": "https://google.com",
+      "validation": "url"
+    }
+  },
+  "xml": {
+    "proxies": {
+      "default": [
+        "<ProxyEndpoint name=\"default\">",
+        "  <PreFlow name=\"PreFlow\">",
+        "    <Request>",
+        "      <Step>",
+        "        <Name>verify-oauth-v2-access-token</Name>",
+        "      </Step>",
+        "      <Step>",
+        "        <Name>remove-header-authorization</Name>",
+        "      </Step>",
+        "      <Step>",
+        "        <Name>impose-quota</Name>",
+        "      </Step>",
+        "    </Request>",
+        "  </PreFlow>",
+        "  <HTTPProxyConnection>",
+        "    <BasePath>{{basePath}}</BasePath>",
+        "  </HTTPProxyConnection>",
+        "  <RouteRule name=\"default-route\">",
+        "    <TargetEndpoint>default</TargetEndpoint>",
+        "  </RouteRule>",
+        "</ProxyEndpoint>"
+      ]
+    },
+    "targets": {
+      "default": [
+        "<TargetEndpoint name=\"default\">",
+        "  <HTTPTargetConnection>",
+        "    <URL>{{targetURL}}</URL>",
+        "  </HTTPTargetConnection>",
+        "</TargetEndpoint>"
+      ]
+    },
+    "policies": {
+      "impose-quota": [
+        "<Quota async=\"false\" continueOnError=\"false\" enabled=\"true\" name=\"impose-quota\">",
+        "    <DisplayName>Impose Quota</DisplayName>",
+        "    <Allow countRef=\"apiproduct.developer.quota.limit\" count=\"2000\"/>",
+        "    <Interval ref=\"apiproduct.developer.quota.interval\">1</Interval>",
+        "    <Distributed>true</Distributed>",
+        "    <Synchronous>true</Synchronous>",
+        "    <TimeUnit ref=\"apiproduct.developer.quota.timeunit\">month</TimeUnit>",
+        "</Quota>"
+      ],
+      "verify-oauth-v2-access-token": [
+        "<OAuthV2 async=\"false\" continueOnError=\"false\" enabled=\"true\" name=\"verify-oauth-v2-access-token\">",
+        "   <DisplayName>Verify OAuth v2.0 Access Token</DisplayName>",
+        "   <Operation>VerifyAccessToken</Operation>",
+        "</OAuthV2>"
+      ],
+      "remove-header-authorization": [
+        "<AssignMessage async=\"false\" continueOnError=\"false\" enabled=\"true\" name=\"remove-header-authorization\">",
+        "    <DisplayName>Remove Header Authorization</DisplayName>",
+        "    <Remove>",
+        "        <Headers>",
+        "            <Header name=\"Authorization\"/>",
+        "        </Headers>",
+        "    </Remove>",
+        "    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>",
+        "    <AssignTo createNew=\"false\" transport=\"http\" type=\"request\"/>",
+        "</AssignMessage>"
+      ]
+    }
+  }
+}

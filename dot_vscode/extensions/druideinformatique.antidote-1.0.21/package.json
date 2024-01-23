@@ -1,0 +1,137 @@
+{
+	"name": "antidote",
+	"displayName": "Antidote - VS Code",
+	"description": "",
+	"version": "1.0.21",
+	"publisher": "druideinformatique",
+	"qna": "https://www.antidote.info/en/assistance/questions-frequentes",
+	"icon": "media/icon_128x128@2x.png",
+	"homepage": "https://www.antidote.info",
+	"extensionKind": [
+		"ui"
+	],
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"supported": "true"
+		}
+	},
+	"galleryBanner": {
+		"color": "#102344",
+		"theme": "dark"
+	},
+	"engines": {
+		"vscode": "^1.44.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"menus": {
+			"editor/context": [
+				{
+					"command": "antidote.correcteur",
+					"group": "2_antidote"
+				},
+				{
+					"command": "antidote.dictionnaire",
+					"group": "2_antidote"
+				},
+				{
+					"command": "antidote.guide",
+					"group": "2_antidote"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "antidote.correcteur",
+					"group": "navigation"
+				},
+				{
+					"command": "antidote.dictionnaire",
+					"group": "navigation"
+				},
+				{
+					"command": "antidote.guide",
+					"group": "navigation"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "antidote.correcteur",
+				"title": "%extension.menu.contextuel.correcteur%",
+				"icon": {
+					"light": "./media/icone-correcteur.svg",
+					"dark": "./media/icone-correcteur.svg"
+				}
+			},
+			{
+				"command": "antidote.dictionnaire",
+				"title": "%extension.menu.contextuel.dictionnaire%",
+				"icon": {
+					"light": "./media/icone-dicos.svg",
+					"dark": "./media/icone-dicos.svg"
+				}
+			},
+			{
+				"command": "antidote.guide",
+				"title": "%extension.menu.contextuel.guide%",
+				"icon": {
+					"light": "./media/icone-guides.svg",
+					"dark": "./media/icone-guides.svg"
+				}
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "webpack --mode production",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch",
+		"test-compile": "tsc -p ./",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/aes-js": "^3.1.1",
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^13.11.0",
+		"@types/vscode": "^1.44.0",
+		"@types/ws": "^7.2.4",
+		"electron": "^23.1.3",
+		"electron-rebuild": "^3.2.3",
+		"glob": "^7.1.6",
+		"mocha": "^9.1.3",
+		"ts-loader": "^8.0.3",
+		"typescript": "^3.8.3",
+		"@vscode/vsce": "^2.15.0",
+		"vscode-nls-dev": "^3.3.1",
+		"vscode-test": "^1.3.0",
+		"webpack": "^5.61.0",
+		"webpack-cli": "^4.9.1"
+	},
+	"dependencies": {
+		"aes-js": "^3.1.2",
+		"child-process": "^1.0.2",
+		"fs": "^0.0.1-security",
+		"vscode-nls": "^4.1.2",
+		"ws": "^7.5.5"
+	},
+	"__metadata": {
+		"id": "5f306f64-d5c0-4853-b72a-b0c1766aa577",
+		"publisherId": "0f2bf0bd-9a43-4fbb-b275-bd0f884a86bb",
+		"publisherDisplayName": "Druide informatique inc.",
+		"targetPlatform": "undefined",
+		"updated": false,
+		"isPreReleaseVersion": false,
+		"installedTimestamp": 1692641255311,
+		"preRelease": false
+	}
+}

@@ -1,0 +1,61 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "m2c: Copy",
+      "type": "process",
+      "command": "make",
+      "args": [
+        "copy",
+      ],
+      "options": {
+        "env": {
+          "M2C": "${config:cloudcode.migrateToContainers.m2cExecutable}"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "m2c: Analyze",
+      "type": "process",
+      "command": "make",
+      "args": [
+        "analyze",
+      ],
+      "options": {
+        "env": {
+          "M2C": "${config:cloudcode.migrateToContainers.m2cExecutable}"
+        }
+      },
+      "problemMatcher": [],
+    },
+    {
+      "label": "m2c: Generate",
+      "type": "process",
+      "command": "make",
+      "args": [
+        "generate",
+      ],
+      "options": {
+        "env": {
+          "M2C": "${config:cloudcode.migrateToContainers.m2cExecutable}"
+        }
+      },
+      "problemMatcher": [],
+    },
+    {
+      "label": "m2c: Clean",
+      "type": "process",
+      "command": "make",
+      "args": [
+        "clean",
+      ],
+      "options": {
+        "env": {
+          "M2C": "${config:cloudcode.migrateToContainers.m2cExecutable}"
+        }
+      },
+      "problemMatcher": [],
+    }
+  ]
+}

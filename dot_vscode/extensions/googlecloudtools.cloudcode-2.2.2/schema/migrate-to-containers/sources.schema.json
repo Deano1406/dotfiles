@@ -1,0 +1,49 @@
+{
+  "$id": "mcdc-source-list",
+  "title": "Sources",
+  "description": "List of sources for MCDC",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["host"],
+    "properties": {
+      "title": {
+        "description": "Human readable title that will be displayed in the list",
+        "type": "string",
+        "minLength": 1
+      },
+      "host": {
+        "description": "SSH Host",
+        "type": "string"
+      },
+      "port": {
+        "description": "SSH server port (default 22)",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 65535,
+        "default": 22
+      },
+      "user": {
+        "description": "Username for SSH authentication",
+        "type": "string",
+        "default": "root"
+      },
+      "identityFile": {
+        "description": "Identity file for SSH public key authentication",
+        "type": "string"
+      },
+      "connectTimeout": {
+        "description": "Timeout in seconds for establishing an SSH connection to the server (default 60)",
+        "type": "integer",
+        "default": 60
+      },
+      "sshArgs": {
+        "description": "Additional arguments to pass to ssh and scp",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

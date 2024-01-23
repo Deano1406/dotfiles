@@ -1,0 +1,278 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cloud.google.com/code/sourceprotect/v1alpha1.schema.json",
+  "title": "Source Protect Policy",
+  "description": "A Google Cloud Code source protect policy",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "enum": ["v1alpha1"]
+    },
+    "licenses": {
+      "$ref": "#/$defs/licenses",
+      "title": "License policy configuration",
+      "description": "Defines how source protect handles software licenses",
+      "examples": [
+        {
+          "allow": ["Apache-*", "0BSD", "Beerware", "BSD-*"],
+          "deny": ["CC-BY-NC-*"]
+        }
+      ]
+    },
+    "packages": {
+      "$ref": "#/$defs/packages",
+      "title": "Package policy configuration",
+      "description": "Defines how source protect handles packages",
+      "examples": [
+        {
+          "deny": [
+            {
+              "ecosystem": "npm",
+              "id": "lodash",
+              "version": ["4.17.18", "4.17.19"],
+              "options": {
+                "directOnly": false,
+                "level": "error"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "vulnerabilities": {
+      "$ref": "#/$defs/vulnerabilities",
+      "title": "Vulnerability policy configuration",
+      "description": "Defines how source protect handles software vulnerabilities",
+      "examples": [
+        {
+          "maximumFixableSeverity": "MEDIUM",
+          "maximumUnfixableSeverity": "HIGH",
+          "exempted": [
+            {
+              "id": "CVE-2017-1000082",
+              "reason": "we disable databind functionality so not exploitable",
+              "expires": "2023-12-12"
+            }
+          ]
+        }
+      ]
+    },
+    "remotePolicies": {
+      "title": "Remote source protect policies",
+      "description": "A list of remote source protect policies to use in this workspace",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["version"],
+  "additionalProperties": false,
+  "$defs": {
+    "packages": {
+      "type": "object",
+      "properties": {
+        "deny": {
+          "description": "Packages that are prohibited from use",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/packageExclusion"
+          }
+        }
+      }
+    },
+    "licenses": {
+      "type": "object",
+      "properties": {
+        "allow": {
+          "description": "Licenses that are permitted for use",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deny": {
+          "description": "Licenses that are prohibited from use",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unknown": {
+          "description": "Default behavior for handling licenses that are neither permitted nor prohibited",
+          "type": "string",
+          "enum": ["error", "warn", "info"]
+        },
+        "exempt": {
+          "title": "License exemptions",
+          "description": "License enforcement exemptions granted by this policy",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/licenseExemption"
+          }
+        }
+      },
+      "examples": [
+        {
+          "allow": ["Apache-*", "0BSD", "Beerware", "BSD-*"],
+          "deny": ["CC-BY-NC-*"]
+        }
+      ],
+      "additionalProperties": false
+    },
+    "vulnerabilities": {
+      "type": "object",
+      "properties": {
+        "maximumFixableSeverity": {
+          "title": "Maximum Fixable Severity",
+          "description": "Suppress vulnerabilities with severity less than or equal to this value",
+          "$ref": "#/$defs/severity"
+        },
+        "maximumUnfixableSeverity": {
+          "title": "Maximum Unfixable Severity",
+          "description": "Suppress vulnerabilities that have no available fixes when they are less than or equal to this severity",
+          "$ref": "#/$defs/severity"
+        },
+        "exempted": {
+          "title": "CVE Exemptions",
+          "description": "Specific CVEs that are exempt from enforcement",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cveExemption"
+          }
+        }
+      },
+      "examples": [
+        {
+          "maximumFixableSeverity": "MEDIUM",
+          "maximumUnfixableSeverity": "HIGH",
+          "exempted": [
+            {
+              "id": "CVE-2017-1000082",
+              "reason": "we disable databind functionality so not exploitable",
+              "expires": "2023-12-12"
+            }
+          ]
+        }
+      ],
+      "additionalProperties": false
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    },
+    "cveExemption": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "CVE ID",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Reason for exempting this vulnerability",
+          "type": "string"
+        },
+        "expires": {
+          "description": "Date after which this exemption expires",
+          "anyOf": [
+            { "type": "string", "format": "date" },
+            { "type": "string", "format": "date-time" }
+          ]
+        }
+      },
+      "required": ["id"],
+      "examples": [
+        {
+          "id": "CVE-2017-1000082",
+          "reason": "we disable databind functionality so not exploitable",
+          "expires": "2023-12-12"
+        }
+      ],
+      "additionalProperties": false
+    },
+    "PURL": {
+      "type": "string",
+      "description": "A Package URL (PURL) as specified by https://github.com/package-url/purl-spec/blob/master/PURL-SPECIFICATION.rst",
+      "pattern": "^pkg:([a-zA-Z.+-][a-zA-Z0-9.+-]*)([a-zA-Z0-9%-./]*)/([a-zA-Z0-9%-.]+)(@[a-zA-Z0-9%-.]+)?$"
+    },
+    "licenseExemption": {
+      "type": "object",
+      "properties": {
+        "package": {
+          "description": "The PURL of the package to exclude from license enforcement. If version is not specified, exemption applies to all versions.",
+          "$ref": "#/$defs/PURL"
+        },
+        "license": {
+          "type": "string"
+        },
+        "expires": {
+          "description": "Date after which this exemption expires",
+          "anyOf": [
+            { "type": "string", "format": "date" },
+            { "type": "string", "format": "date-time" }
+          ]
+        }
+      },
+      "required": ["package", "license"],
+      "additionalProperties": false,
+      "examples": [
+        {
+          "package": "pkg:npm/%40angular/animation@12.3.1",
+          "license": "MIT"
+        },
+        {
+          "package": "pkg:maven/org.apache.commons/commons-math@1.3.1",
+          "license": "BSD*",
+          "expires": "2029-05-03"
+        },
+        {
+          "package": "pkg:golang/github.com/golang/protobuf@v1.3.3",
+          "license": "Apache*"
+        },
+        {
+          "package": "pkg:pypi/django",
+          "license": "Apache*"
+        }
+      ]
+    },
+    "packageExclusion": {
+      "type": "object",
+      "properties": {
+        "ecosystem": {
+          "description": "The ecosystem of the package to exclude.",
+          "type": "string",
+          "enum": ["maven", "gomod", "npm", "pip", "nuget"]
+        },
+        "id": {
+          "description": "The id of the package to exclude. Can include wildcards.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Versions to be excluded. Versions can either be exact (e.g. '1.2.3'), ranges (e.g. '(1.2,1.3]'), or prefixes (e.g. '1.2.+').",
+          "anyOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
+        "options": {
+          "$ref": "#/$defs/packageExclusionOptions"
+        }
+      }
+    },
+    "packageExclusionOptions": {
+      "type": "object",
+      "properties": {
+        "directOnly": {
+          "description": "Only exclude the package if it is directly mentioned in a manifest file.",
+          "type": "boolean"
+        },
+        "level": {
+          "description": "Treatment to report a denied package.",
+          "type": "string",
+          "enum": ["error", "warn", "info"]
+        }
+      }
+    }
+  }
+}
