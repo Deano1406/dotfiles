@@ -116,7 +116,7 @@ require("lazy").setup({
 					conform.format({
 						lsp_fallback = true,
 						async = false,
-						timeout_ms = 500,
+						timeout_ms = 1000,
 					})
 				end, { desc = "Format file or range (in visual mode)" }),
 			})
@@ -158,6 +158,7 @@ require("lazy").setup({
 			-- Automatically install LSPs to stdpath for neovim
 			{ "williamboman/mason.nvim", config = true },
 			"williamboman/mason-lspconfig.nvim",
+			"WhoIsSethDaniel/mason-tool-installer.nvim",
 
 			-- Useful status updates for LSP
 			-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
@@ -291,13 +292,12 @@ require("lazy").setup({
 			null_ls.setup({
 				null_ls.builtins.formatting.stylua,
 				null_ls.builtins.formatting.black,
-				-- null_ls.builtins.formatting.isort,
+				null_ls.builtins.formatting.isort,
 				null_ls.builtins.diagnostics.ruff,
 				null_ls.builtins.diagnostics.selene,
 				null_ls.builtins.diagnostics.pylint,
+				--null_ls.builtins.diganostics.lua_ls,
 			})
-
-			vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
 		end,
 	},
 
@@ -620,13 +620,12 @@ local on_attach = function(_, bufnr)
 
 	nmap("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
 	nmap("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
-
-	nmap("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
-	nmap("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
-	nmap("gI", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
-	nmap("<leader>D", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
-	nmap("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
-	nmap("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[W]orkspace [S]ymbols")
+	nmap("<leader>ld", require("telescope.builtin").lsp_definitions, "[L]SP: Goto [D]efinition")
+	nmap("<leader>lr", require("telescope.builtin").lsp_references, "[L]SP: Goto [R]eferences")
+	nmap("<leader>li", require("telescope.builtin").lsp_implementations, "[L]SP: Goto [I]mplementation")
+	nmap("<leader>lt", require("telescope.builtin").lsp_type_definitions, "[L]SP: [T]ype Definition")
+	nmap("<leader>ds", require("telescope.builtin").lsp_document_symbols, "LSP: [D]ocument [S]ymbols")
+	nmap("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols, "LSP: [W]orkspace [S]ymbols")
 
 	-- See `:help K` for why this keymap
 	nmap("K", vim.lsp.buf.hover, "Hover Documentation")
@@ -656,6 +655,7 @@ require("which-key").register({
 	["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
 	["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
 	["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
+	["<leader>l"] = { name = "[L]anguage Server", _ = "which_key_ignore" },
 })
 -- register which-key VISUAL mode
 -- required for visual <leader>hs (hunk stage) to work
@@ -703,9 +703,36 @@ capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
 -- Ensure the servers above are installed
 local mason_lspconfig = require("mason-lspconfig")
+local mason_tool_installer = require("mason-tool-installer")
 
 mason_lspconfig.setup({
 	ensure_installed = vim.tbl_keys(servers),
+	ui = {
+		icons = {
+			package_installed = "✓",
+			package_pending = "▷",
+			package_uninstalled = "✕",
+		},
+	},
+	ensure_installed = {
+		"tsserver",
+		"html",
+		"lua_ls",
+		"pyright",
+		"yamlls",
+	},
+	automatic_installation = true,
+})
+mason_tool_installer.setup({
+	ensure_installed = {
+		"prettier",
+		"stylua",
+		"isort",
+		"black",
+		"pylint",
+		"yamlfmt",
+		"yamllint",
+	},
 })
 
 mason_lspconfig.setup_handlers({
@@ -749,14 +776,15 @@ cmp.setup({
 		end,
 	},
 	completion = {
-		completeopt = "menu,menuone,noinsert",
+		completeopt = "menu,menuone,noinsert,preview",
 	},
 	mapping = cmp.mapping.preset.insert({
-		["<C-n>"] = cmp.mapping.select_next_item(),
-		["<C-p>"] = cmp.mapping.select_prev_item(),
+		["<C-k>"] = cmp.mapping.select_next_item(),
+		["<C-j>"] = cmp.mapping.select_prev_item(),
 		["<C-b>"] = cmp.mapping.scroll_docs(-4),
 		["<C-f>"] = cmp.mapping.scroll_docs(4),
 		["<C-Space>"] = cmp.mapping.complete({}),
+		["<C-e>"] = cmp.mapping.abort(), -- Close completion window
 		["<CR>"] = cmp.mapping.confirm({
 			behavior = cmp.ConfirmBehavior.Replace,
 			select = true,
