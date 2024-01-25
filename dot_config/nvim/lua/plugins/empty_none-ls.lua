@@ -9,6 +9,7 @@ return {
 			null_ls.builtins.diagnostics.ruff,
 			null_ls.builtins.diagnostics.selene,
 			null_ls.builtins.diagnostics.pylint,
+			--null_ls.builtins.diagnostics.yaml-language-server,
 			--null_ls.builtins.diganostics.lua_ls,
 		})
 	end,
