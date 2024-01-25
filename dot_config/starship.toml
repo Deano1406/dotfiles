@@ -4,7 +4,7 @@ command_timeout = 3000
 # https://i.stack.imgur.com/KTSQa.png
 # add_newline = true
 
-format = '$all$directory'
+format = '$all'
 scan_timeout = 100
 palette = "catppuccin_mocha"
 

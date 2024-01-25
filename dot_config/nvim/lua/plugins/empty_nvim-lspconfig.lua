@@ -6,6 +6,22 @@ return {
 		{ "j-hui/fidget.nvim", opts = {} },
 		"folke/neodev.nvim",
 	},
+	opts = {
+		server = {
+			pyright = {
+				settings = {
+					python = {
+						analysis = {
+							typeCheckingMode = "off",
+							autoSearchPaths = true,
+							useLibraryCodeForTypes = true,
+							diagnosticMode = "workspace",
+						},
+					},
+				},
+			},
+		},
+	},
 	config = function()
 		-- [[ Configure LSP ]]
 		--  This function gets run when an LSP connects to a particular buffer.
