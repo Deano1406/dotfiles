@@ -32,6 +32,7 @@ vim.opt.rtp:prepend(lazypath)
 -- [[ Configure plugins ]]
 require("lazy").setup("plugins")
 require("vim-config")
+require("lsp-config")
 require("keymaps")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
