@@ -13,6 +13,7 @@ mason_lspconfig.setup({
 		"pyright",
 		"lua_ls",
 		"yamlls",
+		"marksman",
 	},
 	automatic_installation = true,
 })
@@ -22,6 +23,7 @@ lspconfig.pyright.setup({})
 lspconfig.html.setup({})
 lspconfig.tsserver.setup({})
 lspconfig.yamlls.setup({})
+lspconfig.marksman.setup({})
 
 mason_tool_installer.setup({
 	ensure_installed = {
@@ -31,37 +33,13 @@ mason_tool_installer.setup({
 		"black",
 		"luacheck",
 		"pylint",
-		"zsh",
 	},
 	auto_update = true,
 	debounce_hours = 3,
 })
 
- lint.event = { "BufReadPre", "BufNewFile" }
- lint.config = function()
-	local lint = require("lint");
-
-	lint.linters_by_ft = {
-		lua = { "luacheck" },
-		python = { "pylint" },
-		zsh = { "zsh" },
-	}
-	local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
-
-	vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
-		group = lint_augroup,
-		callback = function()
-			lint.try_lint()
-		end,
-	})
-
-	vim.keymap.set("n", "<leader>ml", function()
-		lint.try_lint()
-	end, { desc = "Trigger linting for the current file" })
-end
-
 conform.event = { "BufReadPre", "BufNewFile" }
-conform.config = function()
+conform.setup({
 	formatters_by_ft = {
 		javascript = { "prettier" },
 		typescript = { "prettier" },
@@ -76,17 +54,36 @@ conform.config = function()
 		graphql = { "prettier" },
 		lua = { "stylua" },
 		python = { "isort", "black" },
-	}
+	},
+
 	format_on_save = {
 		lsp_fallback = true,
 		async = false,
 		timeout_ms = 2000,
-	}
-	vim.keymap.set({ "n", "v" }, "<leader>mp", function()
+	},
+
+	vim.keymap.set({ "n", "v" }, "<leader>dp", function()
 		conform.format({
 			lsp_fallback = true,
 			async = false,
-			timeout_ms = 2000
-		})	
-	end, { desc = "Format file or range (in visual mode)" })
-end
+			timeout_ms = 2000,
+		})
+	end, { desc = "Format document or range (in visual mode)" }),
+})
+
+lint.event = { "BufReadPre", "BufNewFile" }
+lint.linters_by_ft = {
+	lua = { "luacheck" },
+	python = { "pylint" },
+	markdown = { "marksman" },
+}
+
+vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+	callback = function()
+		lint.try_lint()
+	end,
+})
+
+vim.keymap.set("n", "<leader>dl", function()
+	lint.try_lint()
+end, { desc = "Trigger linting for the current document" })

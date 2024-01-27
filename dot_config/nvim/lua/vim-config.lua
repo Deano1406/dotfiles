@@ -50,3 +50,15 @@ vim.o.termguicolors = true
 
 -- Set the neovim colour scheme
 vim.cmd.colorscheme "catppuccin-mocha"
+
+vim.diagnostic.config({
+  virtual_text = true,
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  float = {
+    border = "rounded",
+    source = true,
+  },
+  severity_sort = true,
+})
