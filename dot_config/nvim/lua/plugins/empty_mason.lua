@@ -5,5 +5,6 @@ return {
 		"neovim/nvim-lspconfig",
 		"stevearc/conform.nvim",
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
+		"mfussenegger/nvim-lint",
 	},
 }
