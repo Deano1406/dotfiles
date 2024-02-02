@@ -75,7 +75,7 @@ lint.event = { "BufReadPre", "BufNewFile" }
 lint.linters_by_ft = {
 	lua = { "luacheck" },
 	python = { "pylint" },
-	markdown = { "marksman" },
+	markdown = { "markdownlint" },
 }
 
 vim.api.nvim_create_autocmd({ "BufWritePost" }, {

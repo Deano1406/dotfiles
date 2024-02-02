@@ -48,17 +48,20 @@ vim.o.completeopt = "menuone,noselect"
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
+-- set conceallevel for Obsidian plugin
+vim.opt.conceallevel = 1
+
 -- Set the neovim colour scheme
-vim.cmd.colorscheme "catppuccin-mocha"
+vim.cmd.colorscheme("catppuccin-mocha")
 
 vim.diagnostic.config({
-  virtual_text = true,
-  signs = true,
-  underline = true,
-  update_in_insert = false,
-  float = {
-    border = "rounded",
-    source = true,
-  },
-  severity_sort = true,
+	virtual_text = true,
+	signs = true,
+	underline = true,
+	update_in_insert = false,
+	float = {
+		border = "rounded",
+		source = true,
+	},
+	severity_sort = true,
 })
