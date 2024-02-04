@@ -6,8 +6,8 @@ command_timeout = 3000
 palette = "catppuccin_mocha"
 
 format = """\
-[](bg:#030B16 fg:surface0)\
-[󰀵 ](bg:surface0 fg:peach)\
+[](bg:base fg:surface0)\
+[󰀵 ](bg:surface0 fg:text)\
 [](fg:surface0 bg:surface1)\
 $time\
 [](fg:surface1 bg:surface2)\
@@ -16,7 +16,7 @@ $directory\
 $git_branch\
 $git_status\
 $git_metrics\
-[](fg:yellow bg:surface0)\
+[](fg:yellow bg:base)\
 $character\
 """
 
@@ -57,7 +57,7 @@ error_symbol = '[ ✗](red) '
 disabled = false
 time_format = "%R" # Hour:Minute Format
 style = "bg:surface1"
-format = '[[ 󱑍 $time ](bg:surface1 fg:rosewater)]($style)'
+format = '[[ 󱑍 $time ](bg:surface1 fg:peach)]($style)'
 
 
 [palettes.catppuccin_mocha]
