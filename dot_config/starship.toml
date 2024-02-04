@@ -6,36 +6,38 @@ command_timeout = 3000
 palette = "catppuccin_mocha"
 
 format = """\
-[](bg:#030B16 fg:#7DF9AA)\
-[󰀵 ](bg:#7DF9AA fg:#090c0c)\
-[](fg:#7DF9AA bg:#1C3A5E)\
+[](bg:#030B16 fg:surface0)\
+[󰀵 ](bg:surface0 fg:peach)\
+[](fg:surface0 bg:surface1)\
 $time\
-[](fg:#1C3A5E bg:#3B76F0)\
+[](fg:surface1 bg:surface2)\
 $directory\
-[](fg:#3B76F0 bg:#FCF392)\
+[](fg:surface2 bg:yellow)\
 $git_branch\
 $git_status\
 $git_metrics\
-[](fg:#FCF392 bg:#030B16)\
+[](fg:yellow bg:surface0)\
 $character\
 """
 
 [directory]
-format = "[ ﱮ $path ]($style)"
-style = "fg:#E4E4E4 bg:#3B76F0"
+format = "[  $path ]($style)"
+# style = "fg:sky bg:blue"
+style = "fg:sky bg:surface2"
+
 
 [git_branch]
 format = '[ $symbol$branch(:$remote_branch) ]($style)'
 symbol = "  "
-style = "fg:#1C3A5E bg:#FCF392"
+style = "fg:surface1 bg:yellow"
 
 [git_status]
 format = '[$all_status]($style)'
-style = "fg:#1C3A5E bg:#FCF392"
+style = "fg:surface1 bg:yellow"
 
 [git_metrics]
 format = "([+$added]($added_style))[]($added_style)"
-added_style = "fg:#1C3A5E bg:#FCF392"
+added_style = "fg:surface1 bg:yellow"
 deleted_style = "fg:bright-red bg:235"
 disabled = false
 
@@ -49,13 +51,13 @@ style = "fg:bright-white bg:18"
 
 [character]
 success_symbol = '[ ➜](bold green) '
-error_symbol = '[ ✗](#E84D44) '
+error_symbol = '[ ✗](red) '
 
 [time]
 disabled = false
 time_format = "%R" # Hour:Minute Format
-style = "bg:#1d2230"
-format = '[[ 󱑍 $time ](bg:#1C3A5E fg:#8DFBD2)]($style)'
+style = "bg:surface1"
+format = '[[ 󱑍 $time ](bg:surface1 fg:rosewater)]($style)'
 
 
 [palettes.catppuccin_mocha]
