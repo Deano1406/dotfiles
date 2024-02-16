@@ -13,6 +13,7 @@ $time\
 [](fg:surface1 bg:surface2)\
 $directory\
 [](fg:surface2 bg:yellow)\
+$python\
 $git_branch\
 $git_status\
 $git_metrics\
@@ -24,6 +25,10 @@ $character\
 format = "[  $path ]($style)"
 # style = "fg:sky bg:blue"
 style = "fg:sky bg:surface2"
+
+[python]
+style = "fg:surface1 bg:yellow"
+format = "[  ${python_version_name} ${pyenv_prefix} ]($style)"
 
 
 [git_branch]
